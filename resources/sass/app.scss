@@ -1,0 +1,36 @@
+
+.x-menu {
+	background-color: #efefef;
+	//@include st-box-shadow(inset -3px 0px 20px -10px black);
+	background-color: #efefef;
+	-webkit-box-shadow: inset -3px 0px 20px -10px black;
+	box-shadow: inset -3px 0px 20px -10px black;
+	padding:0px;
+
+	.x-button {
+
+
+		&.x-button-pressing {
+			background-color: #e1e1e1;
+			background-image: none;
+		}
+
+		.x-button-label {
+			line-height: 1.3em;
+			text-align: left;
+			font-weight: 300;
+		}
+	}
+}
+
+// The following two lines import the default Sencha Touch theme. If you are building
+// a new theme, remove them and the add your own CSS on top of the base CSS (which
+// is already included in your app.json file).
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+// Custom code goes here..
+
+
+// Examples of using the icon mixin:
+// @include icon('user');
