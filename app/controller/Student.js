@@ -249,16 +249,13 @@ Ext.define('Youngshine.controller.Student', {
 	// 提交测评试卷，生成报告，并转换成html保存到cos+数据表
 	assesstopicSave: function(subject,oldView){		
 		var me = this; 
-		me.assessresult = Ext.create('Youngshine.view.student.assess.AssessResult');
-		me.assessresult.down('label[itemId=assess-title]')
-			.setHtml(oldView.getParentRecord().data.studentName + '｜' + subject)
-		Ext.Viewport.add(me.assessresult);
-		Ext.Viewport.setActiveItem(me.assessresult);
 		
 		var store = Ext.getStore('Topic'); 
-		var data = []
+		var data = [],arrZsd = [],zsdName = ''
 		store.each(function(record){
-			console.log(record)
+			// 题目做对做错？
+			var answer = (record.data.myAnswer == record.data.objective_answer)
+			
 			data.push({
 				gid: record.data.gid,
 				content: record.data.content,
@@ -266,9 +263,36 @@ Ext.define('Youngshine.controller.Student', {
 				myAnswer: record.data.myAnswer,
 				//gidNo: index+1,
 				zsdName: record.data.zsdName,
+				"value1": answer ? 1:0, // 做对的题目
+				"value2": 1,
 			})
+			
+			if(record.data.zsdName != zsdName){
+				zsdName = record.data.zsdName
+				arrZsd.push({
+					"name": zsdName,
+					"value1": answer ? 1:0, // 做对的题目
+					"value2": 1,
+				})
+			}else{ //重复的，累加题目数
+				Ext.Array.each(arrZsd, function(rec,index) {
+			        if(arrZsd[index].name === record.data.zsdName){
+			        	arrZsd[index].value1 += answer ? 1:0, // 做对的题目
+						arrZsd[index].value2 += 1
+			        }
+			    });
+			}
 		});
-		console.log(data)
+		console.log(arrZsd)
+
+		me.assessresult = Ext.create('Youngshine.view.student.assess.AssessResult');
+		me.assessresult.down('label[itemId=assess-title]')
+			.setHtml(oldView.getParentRecord().data.studentName + '｜' + subject)
+		//me.assessresult.down('chart').setStore(storeChart) // 图表
+		me.assessresult.down('chart').getStore().setData(arrZsd) // 图表
+		Ext.Viewport.add(me.assessresult);
+		Ext.Viewport.setActiveItem(me.assessresult);
+		
 		var tpl = new Ext.XTemplate(
 		    '<tpl for=".">',     // interrogate the kids property within the data
 				'<p>题目{#}：',
@@ -278,10 +302,24 @@ Ext.define('Youngshine.controller.Student', {
 					'<span style="color:red;">✘</span>',
 		        '</tpl>',
 				'<span style="float:right;">{myAnswer}／{objective_answer}</p>',
-				'<p style="color:#888;font-size:0.8em;">{zsdName}</p>',
+				'<p style="color:#888;font-size:0.8em;">知识点：{zsdName}</p>',
 		    '</tpl>'
 		);
-		tpl.overwrite(me.assessresult.down('panel[itemId=topicInfo]').body, data); 
+		tpl.overwrite(me.assessresult.down('panel[itemId=topic-list]').body, data); 
+		
+		var tplZsd = new Ext.XTemplate(
+		    '<tpl for=".">',     // interrogate the kids property within the data
+				'<p>{name}<span style="float:right;">{#}</span></p>',
+				'<tpl if="value1 == value2">',
+		            '<p style="color:green;">Good Job。继续保持</p>',
+				'<tpl else>',
+					'<p style="color:red;">加强学习，最好来补习。</p>',
+		        '</tpl>',
+				'<br>',
+		    '</tpl>'
+		);
+		tplZsd.overwrite(me.assessresult.down('panel[itemId=zsd-list]').body, arrZsd); 
+		
 		return
 		
 		Ext.data.JsonP.request({

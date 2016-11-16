@@ -1,6 +1,6 @@
 // 测评试卷的评分结果
 Ext.define('Youngshine.view.student.assess.AssessResult',{
-	extend: 'Ext.Container',
+	extend: 'Ext.Panel',
 	xtype: 'assess-result',
 	
 	//requires: ['Ext.Img','Ext.ActionSheet'], 
@@ -12,7 +12,7 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 		items: [{
 			xtype: 'toolbar',
 			docked: 'top',
-			title: '测评结果', // 根据不同类型Type而变化，在updateRecord
+			title: '测评结果报告', // 根据不同类型Type而变化，在updateRecord
 			items: [{
 				text: '关闭',
 				ui: 'decline',
@@ -35,8 +35,98 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 			xtype: 'panel',
 			style: 'background:#fff;padding:15px;',
 			//height: 100,
-			itemId: 'topicInfo',
+			itemId: 'topic-list',
 			// tpl: 
+		},{
+			height: 350,
+			xtype: 'panel',
+			items: [{			
+				height: 300,
+	            xtype: 'chart',
+	            background: "none",
+	            store: {
+					fields: ['name', 'value1', 'value2'],
+					data: []
+				},
+	            animate: true,
+	            interactions: ['panzoom', 'itemhighlight'],
+	            legend: {
+	                position: "bottom"
+	            },
+	            series: [{
+	                type: 'line',
+	                xField: 'name',
+	                yField: 'value1',
+	                title: '做对',
+	                style: {
+	                    smooth: true,
+	                    stroke: '#115fa6',
+	                    lineWidth: 3,
+	                    shadowColor: 'rgba(0,0,0,0.7)',
+	                    shadowBlur: 10,
+	                    shadowOffsetX: 3,
+	                    shadowOffsetY: 3
+	                },
+	                highlightCfg: {
+	                    scale: 2
+	                },
+	                marker: {
+	                    type: 'circle',
+	                    stroke: '#0d1f96',
+	                    fill: '#115fa6',
+	                    lineWidth: 2,
+	                    radius: 4,
+	                    shadowColor: 'rgba(0,0,0,0.7)',
+	                    shadowBlur: 10,
+	                    shadowOffsetX: 3,
+	                    shadowOffsetY: 3,
+	                    fx: {duration: 300}
+					}	
+	            },{
+	                type: 'bar',
+	                xField: 'name',
+	                yField: ['value2'],
+	                title: ['题目'],
+	                style: {
+	                    maxBarWidth: 15,
+	                    lineWidth: 1.5,
+	                    fill: "#a61120",
+	                    stroke: 'black',
+	                    shadowColor: 'rgba(0,0,0,0.7)',
+	                    shadowBlur: 10,
+	                    shadowOffsetX: 3,
+	                    shadowOffsetY: 3
+	                }
+	            }],
+	            axes: [{
+	                type: 'numeric',
+	                position: 'left',
+	                grid: {
+	                    odd: {
+	                        fill: '#fafafa'
+	                    }
+	                },
+	                style: {
+	                    axisLine: false,
+	                    estStepSize: 20,
+	                    stroke: '#ddd'
+	                },
+	                minimum: 0,
+	                maximum: 5
+	            },{
+	                type: 'category',
+	                position: 'bottom',
+	                //visibleRange: [0, 0.7],
+	                style: {
+	                    estStepSize: 1,
+	                    stroke: '#999'
+	                }
+	            }]
+			}]
+		},{
+			xtype: 'panel',
+			style: 'background:#fff;padding:15px;',
+			itemId: 'zsd-list',	
 		}],
 		
 		listeners: [{
@@ -47,15 +137,6 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 			delegate: 'button[action=close]',
 			event: 'tap',
 			fn: 'onClose'
-		},{
-			delegate: 'radiofield',
-			event: 'check',
-			fn: 'onDone'	
-		},{
-			element: 'element', 
-			event: 'tap',
-			delegate: 'img', // 聊天内容对方头像，单击显示个人信息
-			fn: 'onZoom'
 		}]
 	},
 	
