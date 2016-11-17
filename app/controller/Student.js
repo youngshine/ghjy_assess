@@ -267,12 +267,14 @@ Ext.define('Youngshine.controller.Student', {
 				"value2": 1,
 			})
 			
+			// 重复的累加
 			if(record.data.zsdName != zsdName){
 				zsdName = record.data.zsdName
 				arrZsd.push({
 					"name": zsdName,
 					"value1": answer ? 1:0, // 做对的题目
 					"value2": 1,
+					"subject": subject,
 				})
 			}else{ //重复的，累加题目数
 				Ext.Array.each(arrZsd, function(rec,index) {
@@ -309,7 +311,7 @@ Ext.define('Youngshine.controller.Student', {
 		
 		var tplZsd = new Ext.XTemplate(
 		    '<tpl for=".">',     // interrogate the kids property within the data
-				'<p>{name}<span style="float:right;">{#}</span></p>',
+				'<p>{name}<span style="float:right;color:#888;">{#}</span></p>',
 				'<tpl if="value1 == value2">',
 		            '<p style="color:green;">Good Job。继续保持</p>',
 				'<tpl else>',
@@ -320,10 +322,18 @@ Ext.define('Youngshine.controller.Student', {
 		);
 		tplZsd.overwrite(me.assessresult.down('panel[itemId=zsd-list]').body, arrZsd); 
 		
+		// 传递参数
+		me.assessresult.setParentRecord({
+			"studentID": oldView.getParentRecord().data.studentID,
+			//"subject"  : subject,
+			"result"   : arrZsd,
+		})
+		
 		return
 		
+		// 最新的一份测评报告
 		Ext.data.JsonP.request({
-            url: me.getApplication().dataUrl + 'createAssess.php',
+            url: me.getApplication().dataUrl + 'updateStudentByAssess.php',
             callbackKey: 'callback',
             params:{
                 data: JSON.stringify(obj)
@@ -340,6 +350,7 @@ Ext.define('Youngshine.controller.Student', {
         });
 	},
 	
+	// 关闭，保存到数据记录，并推送微信消息给家长
 	assessresultClose: function(oldView){		
 		var me = this;
 		//oldView.destroy()	

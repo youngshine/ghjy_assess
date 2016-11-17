@@ -7,6 +7,8 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 	
 	config: {
 		parentRecord: null, //container保存数据记录setRecord
+		parentView: null,
+		
 		scrollable: true,
 		
 		items: [{
@@ -176,7 +178,13 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 
 	onClose: function(){
 		var me = this;
-		me.fireEvent('close', me);
+		console.log(me.getParentRecord())
+		//console.log(JSON.stringify(me.getParentRecord()))
+    	Ext.Msg.confirm('询问',"关闭，推送报告给家长？",function(btn){	
+			if(btn == 'yes'){
+				me.fireEvent('close', me);
+			}
+		});	
 	},
 	
 });
