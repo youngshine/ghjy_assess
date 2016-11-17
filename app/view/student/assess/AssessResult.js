@@ -164,6 +164,17 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 		console.log(obj);
 		me.fireEvent('zsdhist',obj, me);
 	},
+
+	onClose: function(){
+		var me = this;
+		console.log(me.getParentRecord())
+		//console.log(JSON.stringify(me.getParentRecord()))
+    	Ext.Msg.confirm('询问',"关闭，推送报告给家长？",function(btn){	
+			if(btn == 'yes'){
+				me.fireEvent('close', me.getParentRecord(), me);
+			}
+		});	
+	},
 	
 	onZoom: function(e){
 		console.log(e.getTarget('img').complete)
@@ -175,16 +186,4 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 		zoom.down('imageviewer').setImageSrc(e.target.src);
 		Ext.Viewport.setActiveItem(zoom);
 	},	
-
-	onClose: function(){
-		var me = this;
-		console.log(me.getParentRecord())
-		//console.log(JSON.stringify(me.getParentRecord()))
-    	Ext.Msg.confirm('询问',"关闭，推送报告给家长？",function(btn){	
-			if(btn == 'yes'){
-				me.fireEvent('close', me);
-			}
-		});	
-	},
-	
 });

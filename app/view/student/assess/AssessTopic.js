@@ -95,20 +95,33 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		console.log(store)
 		
 		var subject = me.down('label[itemId=assess-subject]').getHtml()
-		
+/*		
     	Ext.Msg.confirm('询问',"确认提交测评？",function(btn){	
 			if(btn == 'yes'){
 				me.fireEvent('save', subject,me);
 			}
 		});	
-		return
-		
-		for(var i=0;i<store.getCount();i++){
-			if(store.getAt(i).get('done')==0){
-				Ext.toast('当前题目未做完',3000); return false
-			}
-			done += parseInt( store.getAt(i).get('done') )
-		}
+*/
+		var actionSheet = Ext.create('Ext.ActionSheet', {
+			items: [{
+				text: '做完题目，提交生成测评报告？',
+				ui: 'confirm',
+				handler: function(){
+					actionSheet.hide();
+					Ext.Viewport.remove(actionSheet,true); //移除dom
+					me.fireEvent('save', subject,me);
+				}
+			},{
+				text: '取消',
+				scope: this,
+				handler: function(){
+					actionSheet.hide();
+					Ext.Viewport.remove(actionSheet,true); //移除dom
+				}
+			}]
+		});
+		Ext.Viewport.add(actionSheet);
+		actionSheet.show();	
 	},
 	
 	// 返回

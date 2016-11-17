@@ -17,9 +17,11 @@ $schoolID = $arr->schoolID;
 $schoolsubID = $arr->schoolsubID;
 $val = addslashes( $arr->val );
 
-$query = "SELECT * From `ghjy_student`  
-	Where schoolID = $schoolID And 
-	( studentName Like '%$val%' Or phone Like '%$val%' ) ";
+$query = "SELECT a.*,b.fullname AS schoolsub 
+	From `ghjy_student` a 
+	Join `ghjy_school_sub` b On a.schoolsubID=b.schoolsubID 
+	Where a.schoolID = $schoolID And 
+	( a.studentName Like '%$val%' Or a.phone Like '%$val%' ) ";
 
 $result = mysql_query($query) 
 	or die("Invalid query: readStudentList search" . mysql_error());

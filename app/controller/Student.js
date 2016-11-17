@@ -274,7 +274,7 @@ Ext.define('Youngshine.controller.Student', {
 					"name": zsdName,
 					"value1": answer ? 1:0, // 做对的题目
 					"value2": 1,
-					"subject": subject,
+					//"subject": subject,
 				})
 			}else{ //重复的，累加题目数
 				Ext.Array.each(arrZsd, function(rec,index) {
@@ -323,15 +323,19 @@ Ext.define('Youngshine.controller.Student', {
 		tplZsd.overwrite(me.assessresult.down('panel[itemId=zsd-list]').body, arrZsd); 
 		
 		// 传递参数
-		me.assessresult.setParentRecord({
-			"studentID": oldView.getParentRecord().data.studentID,
-			//"subject"  : subject,
-			"result"   : arrZsd,
-		})
-		
+		var objAssess = {
+			"time"       : new Date().getTime(),
+			"studentID"  : oldView.getParentRecord().data.studentID,
+			"studentName": oldView.getParentRecord().data.studentName,
+			"wxID"       : oldView.getParentRecord().data.wxID,
+			"schoolsub"  : oldView.getParentRecord().data.schoolsub,
+			"subject"    : subject,
+			"result"     : arrZsd,			
+		}
+		me.assessresult.setParentRecord(objAssess)
 		return
 		
-		// 最新的一份测评报告
+		// 最新的一份测评报告，保存到数据库学生记录中assessReport字段
 		Ext.data.JsonP.request({
             url: me.getApplication().dataUrl + 'updateStudentByAssess.php',
             callbackKey: 'callback',
@@ -341,9 +345,7 @@ Ext.define('Youngshine.controller.Student', {
             success: function(result){
 				console.log(result)
 				if(result.success){
-					obj.studentfollowID = result.data.studentfollowID; 
-					obj.created = '刚刚'
-					Ext.getStore('Followup').insert(0,obj)
+					
 				}	
 				Ext.toast(result.message,3000)
 			},
@@ -351,11 +353,28 @@ Ext.define('Youngshine.controller.Student', {
 	},
 	
 	// 关闭，保存到数据记录，并推送微信消息给家长
-	assessresultClose: function(oldView){		
-		var me = this;
+	assessresultClose: function(obj,oldView){		
+		var me = this; console.log(obj)
 		//oldView.destroy()	
 		Ext.Viewport.remove(me.assessresult,true); //remove/destroy 当前界面
 		Ext.Viewport.setActiveItem(me.student);
+		
+		// 发送模版消息：电子收据
+		wxTpl(obj); 
+
+		function wxTpl(objWx){
+			console.log(objWx)
+			Ext.Ajax.request({
+			    url: me.getApplication().dataUrl+'weixinJS_gongzhonghao/wx_msg_tpl_assess.php',
+			    params: objWx,
+			    success: function(response){
+			        var text = response.responseText;
+			        // process server response here
+					console.log(text)//JSON.parse
+					Ext.toast('微信消息推送成功',3000)
+			    }
+			});
+		} // 模版消息end
 	},
 	
 	// 历年考点雷达图

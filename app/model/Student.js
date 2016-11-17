@@ -18,7 +18,7 @@ Ext.define('Youngshine.model.Student', {
 			{name: 'consultID'}, //所属咨询师
 			{name: 'schoolID'}, //学校，报名或网上注册选择
 			{name: 'schoolsubID'}, //学校下的分校区，由咨询师分配
-			{name: 'fullname'},
+			{name: 'schoolsub'}, //分校区fullname
 			
 			{name: 'pass'}, // 通过学习
 			{name: 'pass_date'},
