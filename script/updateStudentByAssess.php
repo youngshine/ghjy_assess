@@ -19,8 +19,9 @@ $jsonResult = '{"time":'.$time.',"subject":"'.$subject.'","result":[';
 for($i = 0; $i < count($result); $i++){
 	$rec = ($result[$i]);
 	$jsonResult .= 
-		'{"name":"'.$rec->name.'","value1":'.$rec->value1.',"value2":'.$rec->value2 .'}';
+		'{"name":"'.$rec->name.'","value1":'.$rec->value1.',"value2":'.$rec->value2 .'},';
 };
+$jsonResult = substr($jsonResult, 0, -1); //最后一个字符,
 $jsonResult .= ']}';
 
 //$result = urldecode ( json_encode ( $result ) ); 
