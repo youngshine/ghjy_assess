@@ -281,6 +281,7 @@ Ext.define('Youngshine.controller.Student', {
 			        if(arrZsd[index].name === record.data.zsdName){
 			        	arrZsd[index].value1 += answer ? 1:0, // 做对的题目
 						arrZsd[index].value2 += 1
+						return false; // break here
 			        }
 			    });
 			}
@@ -323,6 +324,8 @@ Ext.define('Youngshine.controller.Student', {
 		tplZsd.overwrite(me.assessresult.down('panel[itemId=zsd-list]').body, arrZsd); 
 		
 		// 传递参数
+		var result = arrZsd //JSON.stringify(arrZsd)
+	
 		var objAssess = {
 			"time"       : new Date().getTime(),
 			"studentID"  : oldView.getParentRecord().data.studentID,
@@ -330,24 +333,29 @@ Ext.define('Youngshine.controller.Student', {
 			"wxID"       : oldView.getParentRecord().data.wxID,
 			"schoolsub"  : oldView.getParentRecord().data.schoolsub,
 			"subject"    : subject,
-			"result"     : arrZsd,			
+			"result"     : result,		
 		}
-		me.assessresult.setParentRecord(objAssess)
-		return
+		console.log(objAssess)
+		console.log(JSON.stringify(objAssess))
 		
+		me.assessresult.setParentRecord(objAssess)
+		//return
+		
+		Ext.Viewport.setMasked({xtype:'loadmask',message:'正在生成报告'});
 		// 最新的一份测评报告，保存到数据库学生记录中assessReport字段
 		Ext.data.JsonP.request({
             url: me.getApplication().dataUrl + 'updateStudentByAssess.php',
             callbackKey: 'callback',
             params:{
-                data: JSON.stringify(obj)
+                data: JSON.stringify(objAssess)
             },
             success: function(result){
 				console.log(result)
+				Ext.Viewport.setMasked(false)
 				if(result.success){
 					
 				}	
-				Ext.toast(result.message,3000)
+				//Ext.toast(result.message,3000)
 			},
         });
 	},
@@ -371,7 +379,7 @@ Ext.define('Youngshine.controller.Student', {
 			        var text = response.responseText;
 			        // process server response here
 					console.log(text)//JSON.parse
-					Ext.toast('微信消息推送成功',3000)
+					Ext.toast('微信消息推送成功',2000)
 			    }
 			});
 		} // 模版消息end

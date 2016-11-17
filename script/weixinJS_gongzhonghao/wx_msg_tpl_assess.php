@@ -57,7 +57,7 @@ $msg = $student . '学生，完成了课程测评。';
 $tpl = 'DOwMjwVAfKkNkbLfoX_MLmoOEUoKtdGyhNEUHVpoDeA';
 
 // 跳转到服务号，显示当前页面
-$url = 'http://www.xzpt.org/wx_ghjy/assess_report.php?studentID='.$studentID;
+$url = 'http://www.xzpt.org/wx_ghjy/assess_report_tplmsg.php?studentID='.$studentID;
 
 // 教学课后评价提醒模版，评价页面在公众号wx_ghjy/course_assess.html
 $data = '{
