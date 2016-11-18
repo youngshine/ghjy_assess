@@ -50,7 +50,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 			xtype: 'label',
 			docked: 'top',
 			html: '',
-			itemId: 'assess-subject',
+			itemId: 'assessSubject',
 			style: 'text-align:center;color:#888;font-size:0.9em;margin:5px;'
     	}],
 		
@@ -94,7 +94,8 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		var store = me.getStore()
 		console.log(store)
 		
-		var subject = me.down('label[itemId=assess-subject]').getHtml()
+		var subject = me.down('label[itemId=assessSubject]').getHtml()
+		var studentRecord = me.getParentRecord(); //学生信息
 /*		
     	Ext.Msg.confirm('询问',"确认提交测评？",function(btn){	
 			if(btn == 'yes'){
@@ -104,12 +105,12 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 */
 		var actionSheet = Ext.create('Ext.ActionSheet', {
 			items: [{
-				text: '做完题目，提交生成测评报告？',
+				text: '做完题目，生成测评报告？',
 				ui: 'confirm',
 				handler: function(){
 					actionSheet.hide();
 					Ext.Viewport.remove(actionSheet,true); //移除dom
-					me.fireEvent('save', subject,me);
+					me.fireEvent('save', subject,studentRecord);
 				}
 			},{
 				text: '取消',

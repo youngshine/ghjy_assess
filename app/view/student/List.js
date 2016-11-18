@@ -43,9 +43,9 @@ Ext.define('Youngshine.view.student.List', {
 				xtype: 'spacer'	
 			},{
                 xtype: 'searchfield',
-                placeHolder: '搜索姓名、电话...',
+                placeHolder: '搜索姓名、电话、年级、分校区...',
 				clearIcon: false,
-				//width: 150,
+				width: 350,
 				//label: '测评记录',
 				action: 'search',
 			},{

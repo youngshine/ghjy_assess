@@ -22,7 +22,7 @@ Ext.define('Youngshine.controller.Student', {
 				itemtap: 'assesstopicItemtap',
 			},
 			'assess-result': {
-				close: 'assessresultClose',
+				close: 'assessresultClose', // 并且发送微信消息
 				//save: 'assessresultSave', //导出html文件，保存腾讯云cos+数据表
 				zsdhist: 'assessresultZsdhist',
 			},
@@ -97,7 +97,7 @@ Ext.define('Youngshine.controller.Student', {
 				hidden: true,
 				layout: 'fit',
 				
-				parentRecord: record, //传递父窗口参数：当前学生记录
+				//parentRecord: record, //传递父窗口参数：当前学生记录
 				
 		        items: [{	
 		        	xtype: 'toolbar',
@@ -109,43 +109,38 @@ Ext.define('Youngshine.controller.Student', {
 					//disableSelection: true,
 				    itemTpl: '{title}',
 				    data: [
-				        { title: '数学•初一上' },
-				        { title: '数学•初一下' },
-				        { title: '数学•初二上' },
-				        { title: '数学•初二下' },
-				        { title: '数学•初三上' },
-				        { title: '数学•初三下' },
+				        { title: '数学•初一上', subjectID:1,gradeID:7 },
+				        { title: '数学•初一下', subjectID:1,gradeID:7 },
+				        { title: '数学•初二上', subjectID:1,gradeID:8 },
+				        { title: '数学•初二下', subjectID:1,gradeID:8 },
+				        { title: '数学•初三上', subjectID:1,gradeID:9 },
+				        { title: '数学•初三下', subjectID:1,gradeID:9 },
 				    ],
 				}],	
 				
 				listeners: [{
 					delegate: 'list',
 					event: 'itemtap',
-					fn: function( list, index, target, record, e, eOpts ){ 
+					fn: function( list, index, target, modalRecord, e, eOpts ){ 
 						console.log('subject list itemtap')
 						// 显示对应科目的测评题目
-						var modal = list.up('panel')
-						console.log(modal.parentRecord.data)
-						me.assesstopic = Ext.create('Youngshine.view.student.assess.AssessTopic');
-						me.assesstopic.down('label[itemId=assess-subject]').setHtml(record.data.title)
-						me.assesstopic.setParentRecord(modal.parentRecord); //传递数
-						Ext.Viewport.add(me.assesstopic);
-						Ext.Viewport.setActiveItem(me.assesstopic);
+						//var modal = list.up('panel')
+						console.log(modalRecord)
 						
 						this.destroy() 
 						
-						showAssessTopic(record)
+						showAssessTopic(modalRecord)
 					}
 				}]
 			})
 			overlay.show()
 			
 			// 测评试卷
-			function showAssessTopic(){
-				// 某个学校的分校区1-n个，表先加载进来，添加修改用
+			function showAssessTopic(modalRecord){
+				Ext.Viewport.setMasked({xtype:'loadmask',message:'正在出题'});
 				var obj = {
-					"subjectID": 3,
-					"gradeID": 9, //semester'初一上',
+					"subjectID": modalRecord.data.subjectID,
+					"gradeID": modalRecord.data.gradeID, //semester'初一上',
 				}		
 				var store = Ext.getStore('Topic'); 
 				store.removeAll()
@@ -154,28 +149,15 @@ Ext.define('Youngshine.controller.Student', {
 					'readAssessTopic.php?data=' + JSON.stringify(obj));
 				store.load({
 					callback: function(records, operation, success){
-					    if (success){
+					    Ext.Viewport.setMasked(false)
+						if (success){
 							console.log(records)
-							return;
-							
-							var data = []
-							Ext.Array.each(records, function(record, index, countriesItSelf) {
-								data.push({
-									gid: record.data.gid,
-									content: record.data.content,
-									objective_answer: record.data.objective_answer,
-									//gidNo: index+1,
-								})
-							});
-							console.log(data)
-							var tpl = new Ext.XTemplate(
-							    '<tpl for=".">',     // interrogate the kids property within the data
-							        '<p style="color:blue;">题目：{#}</p>',
-									'<p>{content}</p>',
-									'<br><br>',
-							    '</tpl>'
-							);
-							tpl.overwrite(me.assess.down('panel[itemId=topicInfo]').body, data); 
+							me.assesstopic = Ext.create('Youngshine.view.student.assess.AssessTopic');
+							me.assesstopic.setParentRecord(record); //传递数
+							Ext.Viewport.add(me.assesstopic);
+							Ext.Viewport.setActiveItem(me.assesstopic);
+						
+							me.assesstopic.down('label[itemId=assessSubject]').setHtml(modalRecord.data.title)
 						};
 					} 
 				})
@@ -247,7 +229,7 @@ Ext.define('Youngshine.controller.Student', {
 	},
 	
 	// 提交测评试卷，生成报告，并转换成html保存到cos+数据表
-	assesstopicSave: function(subject,oldView){		
+	assesstopicSave: function(subject,studentRecord){		
 		var me = this; 
 		
 		var store = Ext.getStore('Topic'); 
@@ -289,13 +271,16 @@ Ext.define('Youngshine.controller.Student', {
 		console.log(arrZsd)
 
 		me.assessresult = Ext.create('Youngshine.view.student.assess.AssessResult');
-		me.assessresult.down('label[itemId=assess-title]')
-			.setHtml(oldView.getParentRecord().data.studentName + '｜' + subject)
+		me.assessresult.setParentRecord(studentRecord); //传递数:student
+		me.assessresult.down('label[itemId=assessSubject]').setHtml(subject)
 		//me.assessresult.down('chart').setStore(storeChart) // 图表
 		me.assessresult.down('chart').getStore().setData(arrZsd) // 图表
 		Ext.Viewport.add(me.assessresult);
 		Ext.Viewport.setActiveItem(me.assessresult);
 		
+		me.assessresult.down('panel[itemId=topicList]').setData(data);
+		me.assessresult.down('panel[itemId=zsdList]').setData(arrZsd);
+		/*
 		var tpl = new Ext.XTemplate(
 		    '<tpl for=".">',     // interrogate the kids property within the data
 				'<p>题目{#}：',
@@ -308,7 +293,7 @@ Ext.define('Youngshine.controller.Student', {
 				'<p style="color:#888;font-size:0.8em;">知识点：{zsdName}</p>',
 		    '</tpl>'
 		);
-		tpl.overwrite(me.assessresult.down('panel[itemId=topic-list]').body, data); 
+		tpl.overwrite(me.assessresult.down('panel[itemId=topicList]').body, data); 
 		
 		var tplZsd = new Ext.XTemplate(
 		    '<tpl for=".">',     // interrogate the kids property within the data
@@ -321,17 +306,18 @@ Ext.define('Youngshine.controller.Student', {
 				'<br>',
 		    '</tpl>'
 		);
-		tplZsd.overwrite(me.assessresult.down('panel[itemId=zsd-list]').body, arrZsd); 
+		tplZsd.overwrite(me.assessresult.down('panel[itemId=zsdList]').body, arrZsd); 
+		*/
 		
 		// 传递参数
 		var result = arrZsd //JSON.stringify(arrZsd)
 	
 		var objAssess = {
 			"time"       : new Date().getTime(),
-			"studentID"  : oldView.getParentRecord().data.studentID,
-			"studentName": oldView.getParentRecord().data.studentName,
-			"wxID"       : oldView.getParentRecord().data.wxID,
-			"schoolsub"  : oldView.getParentRecord().data.schoolsub,
+			"studentID"  : studentRecord.data.studentID,
+			"studentName": studentRecord.data.studentName,
+			"wxID"       : studentRecord.data.wxID,
+			"schoolsub"  : studentRecord.data.schoolsub,
 			"subject"    : subject,
 			"result"     : result,		
 		}
@@ -367,6 +353,8 @@ Ext.define('Youngshine.controller.Student', {
 		Ext.Viewport.remove(me.assessresult,true); //remove/destroy 当前界面
 		Ext.Viewport.setActiveItem(me.student);
 		
+		Ext.toast('微信消息推送成功',2000)
+		
 		// 发送模版消息：电子收据
 		wxTpl(obj); 
 
@@ -379,7 +367,7 @@ Ext.define('Youngshine.controller.Student', {
 			        var text = response.responseText;
 			        // process server response here
 					console.log(text)//JSON.parse
-					Ext.toast('微信消息推送成功',2000)
+					//Ext.toast('微信消息推送成功')
 			    }
 			});
 		} // 模版消息end

@@ -21,7 +21,8 @@ $query = "SELECT a.*,b.fullname AS schoolsub
 	From `ghjy_student` a 
 	Join `ghjy_school_sub` b On a.schoolsubID=b.schoolsubID 
 	Where a.schoolID = $schoolID And 
-	( a.studentName Like '%$val%' Or a.phone Like '%$val%' ) ";
+	( a.studentName Like '%$val%' Or a.phone Like '%$val%' Or 
+	a.grade Like '%$val%' Or b.fullname Like '%$val%' ) ";
 
 $result = mysql_query($query) 
 	or die("Invalid query: readStudentList search" . mysql_error());

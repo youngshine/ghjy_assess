@@ -6,7 +6,7 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 	//requires: ['Ext.Img','Ext.ActionSheet'], 
 	
 	config: {
-		parentRecord: null, //container保存数据记录setRecord
+		parentRecord: null, //container保存数据记录setRecord 学生
 		parentView: null,
 		
 		scrollable: true,
@@ -31,14 +31,26 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 			xtype: 'label',
 			docked: 'top',
 			html: '',
-			itemId: 'assess-title',
+			itemId: 'assessSubject',
 			style: 'text-align:center;color:#888;font-size:0.9em;margin:5px;'
 		},{	
 			xtype: 'panel',
 			style: 'background:#fff;padding:15px;',
 			//height: 100,
-			itemId: 'topic-list',
+			itemId: 'topicList',
 			// tpl: 
+			tpl: new Ext.XTemplate(
+			    '<tpl for=".">',     // interrogate the kids property within the data
+					'<p>题目{#}：',
+					'<tpl if="myAnswer == objective_answer">',
+			            '<span style="color:green;">✔</span>',
+					'<tpl else>',
+						'<span style="color:red;">✘</span>',
+			        '</tpl>',
+					'<span style="float:right;">{myAnswer}／{objective_answer}</p>',
+					'<p style="color:#888;font-size:0.8em;">知识点：{zsdName}</p>',
+			    '</tpl>'
+			)
 		},{
 			height: 350,
 			xtype: 'panel',
@@ -128,7 +140,18 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 		},{
 			xtype: 'panel',
 			style: 'background:#fff;padding:15px;',
-			itemId: 'zsd-list',	
+			itemId: 'zsdList',	
+			tpl: new Ext.XTemplate(
+			    '<tpl for=".">',     // interrogate the kids property within the data
+					'<p>{name}<span style="float:right;color:#888;">{#}</span></p>',
+					'<tpl if="value1 == value2">',
+			            '<p style="color:green;">Good Job。继续保持</p>',
+					'<tpl else>',
+						'<p style="color:red;">加强学习，最好来补习。</p>',
+			        '</tpl>',
+					'<br>',
+			    '</tpl>'
+			)
 		}],
 		
 		listeners: [{

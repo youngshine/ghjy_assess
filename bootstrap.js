@@ -17,7 +17,8 @@ Ext.Loader.addClassPathMappings({
   "Ext.device.sqlite.SQLResultSetRowList": "touch/src/device/sqlite/Sencha.js",
   "Ext.device.sqlite.SQLTransaction": "touch/src/device/sqlite/Sencha.js",
   "Ext.draw.engine.SvgContext.Gradient": "touch/src/draw/engine/SvgContext.js",
-  "Youngshine": "app"
+  "Youngshine": "app",
+  "Youngshine.view.student.Assess-page": "app/view/student/assess/Assess-page.js"
 });
 Ext.ClassManager.addNameAlternateMappings({
   "Ext.AbstractComponent": [],
@@ -619,6 +620,17 @@ Ext.ClassManager.addNameAlternateMappings({
   "Ext.layout.wrapper.BoxDock": [],
   "Ext.layout.wrapper.Dock": [],
   "Ext.layout.wrapper.Inner": [],
+  "Ext.log.Base": [],
+  "Ext.log.Logger": [],
+  "Ext.log.filter.Filter": [],
+  "Ext.log.filter.Priority": [],
+  "Ext.log.formatter.Default": [],
+  "Ext.log.formatter.Formatter": [],
+  "Ext.log.formatter.Identity": [],
+  "Ext.log.writer.Console": [],
+  "Ext.log.writer.DocumentTitle": [],
+  "Ext.log.writer.Remote": [],
+  "Ext.log.writer.Writer": [],
   "Ext.mixin.Bindable": [],
   "Ext.mixin.Filterable": [],
   "Ext.mixin.Mixin": [],
@@ -744,7 +756,54 @@ Ext.ClassManager.addNameAlternateMappings({
   "Ext.viewport.WindowsPhone": [
     "Ext.viewport.WP"
   ],
-  "Youngshine.view.Main": []
+  "Youngshine.controller.Classes": [],
+  "Youngshine.controller.Main": [],
+  "Youngshine.controller.Student": [],
+  "Youngshine.controller.Teacher": [],
+  "Youngshine.model.ClassStudent": [],
+  "Youngshine.model.Classes": [],
+  "Youngshine.model.Kclist": [],
+  "Youngshine.model.Schoolsub": [],
+  "Youngshine.model.Student": [],
+  "Youngshine.model.Teacher": [],
+  "Youngshine.model.Topic": [],
+  "Youngshine.store.ClassStudent": [],
+  "Youngshine.store.Classes": [],
+  "Youngshine.store.Kclist": [],
+  "Youngshine.store.Schoolsub": [],
+  "Youngshine.store.Student": [],
+  "Youngshine.store.Teacher": [],
+  "Youngshine.store.Topic": [],
+  "Youngshine.store.Zsdhist": [],
+  "Youngshine.view.Login": [],
+  "Youngshine.view.Main": [],
+  "Youngshine.view.Menu": [],
+  "Youngshine.view.classes.AccntDetail": [],
+  "Youngshine.view.classes.Addnew": [],
+  "Youngshine.view.classes.Attendee": [],
+  "Youngshine.view.classes.ClassAll": [],
+  "Youngshine.view.classes.ClassList": [],
+  "Youngshine.view.classes.ClassStudent": [],
+  "Youngshine.view.classes.Edit": [],
+  "Youngshine.view.classes.Kclist": [],
+  "Youngshine.view.classes.List": [],
+  "Youngshine.view.classes.ListDataview": [],
+  "Youngshine.view.classes.Student": [],
+  "Youngshine.view.classes.Teacher": [],
+  "Youngshine.view.classes.Timely": [],
+  "Youngshine.view.student.Addnew": [],
+  "Youngshine.view.student.Assess-page": [],
+  "Youngshine.view.student.Edit": [],
+  "Youngshine.view.student.List": [],
+  "Youngshine.view.student.assess.AssessResult": [],
+  "Youngshine.view.student.assess.AssessTopic": [],
+  "Youngshine.view.student.assess.PolarChart": [],
+  "Youngshine.view.teacher.Addnew": [],
+  "Youngshine.view.teacher.Course": [],
+  "Youngshine.view.teacher.Edit": [],
+  "Youngshine.view.teacher.Kcb": [],
+  "Youngshine.view.teacher.List": [],
+  "Youngshine.view.teacher.course.Assess": []
 });
 Ext.ClassManager.addNameAliasMappings({
   "Ext.AbstractComponent": [],
@@ -1548,6 +1607,17 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.layout.wrapper.BoxDock": [],
   "Ext.layout.wrapper.Dock": [],
   "Ext.layout.wrapper.Inner": [],
+  "Ext.log.Base": [],
+  "Ext.log.Logger": [],
+  "Ext.log.filter.Filter": [],
+  "Ext.log.filter.Priority": [],
+  "Ext.log.formatter.Default": [],
+  "Ext.log.formatter.Formatter": [],
+  "Ext.log.formatter.Identity": [],
+  "Ext.log.writer.Console": [],
+  "Ext.log.writer.DocumentTitle": [],
+  "Ext.log.writer.Remote": [],
+  "Ext.log.writer.Writer": [],
   "Ext.mixin.Bindable": [],
   "Ext.mixin.Filterable": [],
   "Ext.mixin.Mixin": [],
@@ -1685,7 +1755,112 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.viewport.Ios": [],
   "Ext.viewport.Viewport": [],
   "Ext.viewport.WindowsPhone": [],
+  "Youngshine.controller.Classes": [],
+  "Youngshine.controller.Main": [],
+  "Youngshine.controller.Student": [],
+  "Youngshine.controller.Teacher": [],
+  "Youngshine.model.ClassStudent": [],
+  "Youngshine.model.Classes": [],
+  "Youngshine.model.Kclist": [],
+  "Youngshine.model.Schoolsub": [],
+  "Youngshine.model.Student": [],
+  "Youngshine.model.Teacher": [],
+  "Youngshine.model.Topic": [],
+  "Youngshine.store.ClassStudent": [],
+  "Youngshine.store.Classes": [],
+  "Youngshine.store.Kclist": [],
+  "Youngshine.store.Schoolsub": [],
+  "Youngshine.store.Student": [],
+  "Youngshine.store.Teacher": [],
+  "Youngshine.store.Topic": [],
+  "Youngshine.store.Zsdhist": [
+    "store.Zsdhist"
+  ],
+  "Youngshine.view.Login": [
+    "widget.login"
+  ],
   "Youngshine.view.Main": [
-    "widget.main"
+    "widget.mainview"
+  ],
+  "Youngshine.view.Menu": [
+    "widget.sidemenu"
+  ],
+  "Youngshine.view.classes.AccntDetail": [
+    "widget.accnt-detail"
+  ],
+  "Youngshine.view.classes.Addnew": [
+    "widget.classes-addnew"
+  ],
+  "Youngshine.view.classes.Attendee": [
+    "widget.classes-attendee"
+  ],
+  "Youngshine.view.classes.ClassAll": [
+    "widget.class-all"
+  ],
+  "Youngshine.view.classes.ClassList": [
+    "widget.class-list"
+  ],
+  "Youngshine.view.classes.ClassStudent": [
+    "widget.class-student"
+  ],
+  "Youngshine.view.classes.Edit": [
+    "widget.classes-edit"
+  ],
+  "Youngshine.view.classes.Kclist": [
+    "widget.class-kclist"
+  ],
+  "Youngshine.view.classes.List": [
+    "widget.classes"
+  ],
+  "Youngshine.view.classes.ListDataview": [
+    "widget.classes-dataview"
+  ],
+  "Youngshine.view.classes.Student": [
+    "widget.classes-student"
+  ],
+  "Youngshine.view.classes.Teacher": [
+    "widget.classes-teacher"
+  ],
+  "Youngshine.view.classes.Timely": [
+    "widget.classes-timely"
+  ],
+  "Youngshine.view.student.Addnew": [
+    "widget.student-addnew"
+  ],
+  "Youngshine.view.student.Assess-page": [
+    "widget.assess-page"
+  ],
+  "Youngshine.view.student.Edit": [
+    "widget.student-edit"
+  ],
+  "Youngshine.view.student.List": [
+    "widget.student"
+  ],
+  "Youngshine.view.student.assess.AssessResult": [
+    "widget.assess-result"
+  ],
+  "Youngshine.view.student.assess.AssessTopic": [
+    "widget.assess-topic"
+  ],
+  "Youngshine.view.student.assess.PolarChart": [
+    "widget.zsdhist"
+  ],
+  "Youngshine.view.teacher.Addnew": [
+    "widget.teacher-addnew"
+  ],
+  "Youngshine.view.teacher.Course": [
+    "widget.teacher-course"
+  ],
+  "Youngshine.view.teacher.Edit": [
+    "widget.teacher-edit"
+  ],
+  "Youngshine.view.teacher.Kcb": [
+    "widget.teacher-kcb"
+  ],
+  "Youngshine.view.teacher.List": [
+    "widget.teacher"
+  ],
+  "Youngshine.view.teacher.course.Assess": [
+    "widget.course-assess"
   ]
 });

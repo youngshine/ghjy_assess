@@ -13,7 +13,7 @@ Ext.define('Youngshine.model.Student', {
 			{name: 'phone'}, 
 			{name: 'addr'}, 
 			{name: 'note'}, 
-			{name: 'level_list'}, //各学科123报读咨询测评的水平，以获得自适应第一组5个题目
+			//{name: 'level_list'}, //各学科123报读咨询测评的水平，以获得自适应第一组5个题目
 			
 			{name: 'consultID'}, //所属咨询师
 			{name: 'schoolID'}, //学校，报名或网上注册选择
@@ -31,7 +31,7 @@ Ext.define('Youngshine.model.Student', {
 			{ name: 'fullStudent', convert: function(value, record){
 					//var date = record.get('drive_date');
 					return record.get('studentName') + ' ' + record.get('gender') + ' ' +
-					record.get('grade') + ' ' + record.get('phone'); 
+					record.get('grade') + ' ' + record.get('phone') + ' ' + record.get('schoolsub'); 
 				} 
 			},
         ]
