@@ -21,9 +21,11 @@ if($subjectID==1){
 	$table = 'hx_chu_exam_question';
 } 
 
-$query = " SELECT a.*,b.zsdName 
+// 顺序号 JOIN (SELECT @row :=0) r ，@row := @row +1 AS ROW 
+$query = " SELECT a.*,b.zsdName, @row := @row +1 AS ROW  
 	FROM `$table` a 
 	Join `ghjy_zsd` b On a.zsdID_list=b.zsdID 
+	JOIN (SELECT @row :=0) r  
 	WHERE a.objective_flag=1 And  
 		b.subjectID=$subjectID And b.gradeID=$gradeID 
 	LIMIT 10 ";

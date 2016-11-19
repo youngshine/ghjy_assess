@@ -8,6 +8,7 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 	config: {
 		parentRecord: null, //container保存数据记录setRecord 学生
 		parentView: null,
+		parentSubject: null, //测评学科（年级、学期、科目）
 		
 		scrollable: true,
 		
@@ -179,10 +180,10 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 	onZsdhist: function(radio){
 		var me = this
 		var obj = {
-			subjectID: 3,//me.getParentRecord().data.subjectID,
-			gradeID: 9,//me.getParentRecord().data.gradeID,
-			semester: '下',//me.getParentRecord().data.semester,
-			schoolID: localStorage.schoolID,
+			subjectID: me.getParentSubject().subjectID,
+			gradeID: me.getParentSubject().gradeID,
+			semester: me.getParentSubject().semester,
+			schoolID: localStorage.schoolID, //忽略，都用泉州的
 		} 
 		console.log(obj);
 		me.fireEvent('zsdhist',obj, me);

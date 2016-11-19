@@ -46,7 +46,7 @@ Ext.define('Youngshine.view.Main', {
             items: [{
                 xtype: 'image',
                 //cls: 'my-carousel-item-img',
-                src: 'resources/images/carousel03.jpg'
+                src: 'resources/images/carousel01.jpg'
 			},{
                 xtype: 'image',
                 //cls: 'my-carousel-item-img',
@@ -54,7 +54,7 @@ Ext.define('Youngshine.view.Main', {
 			},{
                 xtype: 'image',
                 //cls: 'my-carousel-item-img',
-                src: 'resources/images/carousel01.jpg'		
+                src: 'resources/images/carousel03.jpg'		
             }]
         }],
     },

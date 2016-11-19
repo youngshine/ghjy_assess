@@ -28,13 +28,12 @@ Ext.define('Youngshine.view.student.Addnew', {
 			//title: '个人资料',
 			items: [{
 				xtype: 'textfield',
-				name: 'studentName', //绑定后台数据字段
+				name: 'studentName', //name绑定后台数据字段
 				label: '姓名',
 				clearIcon: false
 			},{
 				xtype: 'selectfield',
 				name: 'gender', 
-				autoSelect: false,
 				label: '性别',
 				options: [
 				    {text: '男', value: '男'},
@@ -61,25 +60,14 @@ Ext.define('Youngshine.view.student.Addnew', {
 				    {text: '四年级', value: '四年级'},
 				    {text: '三年级', value: '三年级'},
 				    {text: '二年级', value: '二年级'},
-				    {text: '一年级', value: '一年级'}
+				    {text: '一年级', value: '一年级'},
+					{text: '幼儿园', value: '幼儿园'},
 				],
 				autoSelect: false, 	
 				defaultPhonePickerConfig: {
 					doneButton: '确定',
 					cancelButton: '取消'
 				},
-			},{	
-				xtype: 'textfield',
-				name: 'addr', //绑定后台数据字段
-				label: '地址',
-				clearIcon: false,
-				listeners: {
-					focus: function(e){
-						// 滚动自己，避免toolbar滚动，前面2个 2*50=100
-						this.up('panel').getScrollable().getScroller().scrollTo(0,100);
-						window.scrollTo(0,0);
-					}
-				}
 			},{	
 				xtype: 'textfield',
 				name: 'phone', //绑定后台数据字段
@@ -95,11 +83,11 @@ Ext.define('Youngshine.view.student.Addnew', {
 						this.up('panel').getScrollable().getScroller().scrollTo(0,100);
 						window.scrollTo(0,0);
 					}
-				}	
+				}
 			},{	
 				xtype: 'textfield',
-				name: 'note', //绑定后台数据字段
-				label: '备注',
+				name: 'addr', //绑定后台数据字段
+				label: '地址',
 				clearIcon: false,
 				listeners: {
 					focus: function(e){
@@ -107,19 +95,7 @@ Ext.define('Youngshine.view.student.Addnew', {
 						this.up('panel').getScrollable().getScroller().scrollTo(0,100);
 						window.scrollTo(0,0);
 					}
-				}
-			},{
-				xtype: 'selectfield',
-				name: 'schoolsubID', 
-				label: '分校区',
-				store: 'Schoolsub',
-				valueField: 'schoolsubID',
-				displayField: 'fullname',
-				autoSelect: false, 	
-				defaultPhonePickerConfig: {
-					doneButton: '确定',
-					cancelButton: '取消'
-				},	
+				}		
 			}]	
 		}],		
 	
@@ -159,9 +135,7 @@ Ext.define('Youngshine.view.student.Addnew', {
 			gender = this.down('selectfield[name=gender]').getValue(),
 			grade = this.down('selectfield[name=grade]').getValue(),
 			phone = this.down('textfield[name=phone]').getValue().trim(),
-			addr = this.down('textfield[name=addr]').getValue().trim(),
-			note = this.down('textfield[name=note]').getValue().trim(),
-			schoolsubID = this.down('selectfield[name=schoolsubID]').getValue()
+			addr = this.down('textfield[name=addr]').getValue().trim()
 	
 		if (studentName == ''){
 			Ext.toast('请填写姓名',3000); return;
@@ -175,17 +149,14 @@ Ext.define('Youngshine.view.student.Addnew', {
 		if (phone == ''){
 			Ext.toast('电话不能空白',3000); return;
 		}
-		if (schoolsubID == null){
-			Ext.toast('请选择学生报读分校区',3000); return;
-		}
+
 		var obj = {
 			studentName: studentName,
 			gender: gender,
 			grade: grade,
 			phone: phone,
 			addr: addr,
-			note: note,
-			schoolsubID: schoolsubID, //归属学校的分校区
+			schoolsubID: localStorage.schoolsubID , //归属学校的分校区
 			consultID: localStorage.consultID,//归属哪个咨询师
 			schoolID: localStorage.schoolID //归属学校
 		};

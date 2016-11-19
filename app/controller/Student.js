@@ -92,7 +92,7 @@ Ext.define('Youngshine.controller.Student', {
 				modal: true,
 				hideOnMaskTap: true,
 				centered: true,
-				width: 300,height: 480,
+				width: 300,height: 380,
 				scrollable: true,
 				hidden: true,
 				layout: 'fit',
@@ -109,12 +109,18 @@ Ext.define('Youngshine.controller.Student', {
 					//disableSelection: true,
 				    itemTpl: '{title}',
 				    data: [
-				        { title: '数学•初一上', subjectID:1,gradeID:7 },
-				        { title: '数学•初一下', subjectID:1,gradeID:7 },
-				        { title: '数学•初二上', subjectID:1,gradeID:8 },
-				        { title: '数学•初二下', subjectID:1,gradeID:8 },
-				        { title: '数学•初三上', subjectID:1,gradeID:9 },
-				        { title: '数学•初三下', subjectID:1,gradeID:9 },
+				        { title: '数学•初一上', subjectID:1,gradeID:7,semester:'上' },
+				        { title: '数学•初一下', subjectID:1,gradeID:7,semester:'下' },
+				        { title: '数学•初二上', subjectID:1,gradeID:8,semester:'上' },
+				        { title: '数学•初二下', subjectID:1,gradeID:8,semester:'下' },
+				        { title: '数学•初三上', subjectID:1,gradeID:9,semester:'上' },
+				        { title: '数学•初三下', subjectID:1,gradeID:9,semester:'下' },
+				        { title: '物理•初二上', subjectID:2,gradeID:8,semester:'上' },
+				        { title: '物理•初二下', subjectID:2,gradeID:8,semester:'下' },
+				        { title: '物理•初三上', subjectID:2,gradeID:9,semester:'上' },
+				        { title: '物理•初三下', subjectID:2,gradeID:9,semester:'下' },
+				        { title: '化学•初三上', subjectID:3,gradeID:9,semester:'上' },
+				        { title: '化学•初三下', subjectID:3,gradeID:9,semester:'下' },
 				    ],
 				}],	
 				
@@ -138,22 +144,25 @@ Ext.define('Youngshine.controller.Student', {
 			// 测评试卷
 			function showAssessTopic(modalRecord){
 				Ext.Viewport.setMasked({xtype:'loadmask',message:'正在出题'});
-				var obj = {
+				var params = {
 					"subjectID": modalRecord.data.subjectID,
-					"gradeID": modalRecord.data.gradeID, //semester'初一上',
+					"gradeID"  : modalRecord.data.gradeID, 
+					"semester" : modalRecord.data.semester,
 				}		
 				var store = Ext.getStore('Topic'); 
 				store.removeAll()
 				//store.clearFilter() 
 				store.getProxy().setUrl(me.getApplication().dataUrl + 
-					'readAssessTopic.php?data=' + JSON.stringify(obj));
+					'readAssessTopic.php?data=' + JSON.stringify(params));
 				store.load({
 					callback: function(records, operation, success){
 					    Ext.Viewport.setMasked(false)
 						if (success){
 							console.log(records)
 							me.assesstopic = Ext.create('Youngshine.view.student.assess.AssessTopic');
-							me.assesstopic.setParentRecord(record); //传递数
+							me.assesstopic.setParentRecord(record); //传递参数：学生
+							
+							me.assesstopic.setParentSubject(params); //传递参数，测评学科
 							Ext.Viewport.add(me.assesstopic);
 							Ext.Viewport.setActiveItem(me.assesstopic);
 						
@@ -180,9 +189,9 @@ Ext.define('Youngshine.controller.Student', {
 			modal: true,
 			hideOnMaskTap: true,
 			centered: true,
-			width: 420, height: 120,
-			//scrollable: true,
-			layout: 'vbox',
+			width: 550, height:550,
+			scrollable: true,
+			//layout: 'vbox',
 	        items: [{	
 	        	xtype: 'toolbar',
 	        	docked: 'top',
@@ -223,13 +232,19 @@ Ext.define('Youngshine.controller.Student', {
 						me.overlay.destroy()
 					}
 				}]	
+			},{
+				xtype: 'panel',
+				html: record.data.content,
+				itemId: 'topicContent',
+				styleHtmlContent: true	
 			}],	
 		})
 		this.overlay.show()
+		//this.overlay.down()
 	},
 	
 	// 提交测评试卷，生成报告，并转换成html保存到cos+数据表
-	assesstopicSave: function(subject,studentRecord){		
+	assesstopicSave: function(subject,studentRecord,objSubject){		
 		var me = this; 
 		
 		var store = Ext.getStore('Topic'); 
@@ -272,6 +287,9 @@ Ext.define('Youngshine.controller.Student', {
 
 		me.assessresult = Ext.create('Youngshine.view.student.assess.AssessResult');
 		me.assessresult.setParentRecord(studentRecord); //传递数:student
+		
+		me.assessresult.setParentSubject(objSubject); //传递参数，测评学科
+		
 		me.assessresult.down('label[itemId=assessSubject]').setHtml(subject)
 		//me.assessresult.down('chart').setStore(storeChart) // 图表
 		me.assessresult.down('chart').getStore().setData(arrZsd) // 图表
@@ -394,8 +412,8 @@ Ext.define('Youngshine.controller.Student', {
 		});	
 	},
 	
-	studentAddnew: function(win){		
-		var me = this;
+	studentAddnew: function(){		
+		var me = this; console.log('new')
 		me.studentaddnew = Ext.create('Youngshine.view.student.Addnew');
 		Ext.Viewport.add(me.studentaddnew);
 		Ext.Viewport.setActiveItem(me.studentaddnew)
@@ -420,12 +438,10 @@ Ext.define('Youngshine.controller.Student', {
 		        console.log(result)
 				Ext.toast(result.message,3000)
 				if(result.success){
-					//var text = response.responseText; JSON.parse()
 					//oldView.destroy()
 					Ext.Viewport.remove(me.studentaddnew,true); //remove 当前界面
 					Ext.Viewport.setActiveItem(me.student);
-					obj.studentID = result.data.studentID; //删除用
-					//obj.created = new Date();
+					obj.studentID = result.data.studentID; //最新插入的id，删除用
 					Ext.getStore('Student').insert(0,obj)
 				}
 		    }

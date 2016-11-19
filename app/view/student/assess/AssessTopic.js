@@ -9,6 +9,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 
     config: {
 		parentRecord: null, //保存list选择的父表的学生记录信息
+		parentSubject: null, //测评学科（年级、学期、科目）
 		
         store: 'Topic',
         //itemHeight: 89,
@@ -16,7 +17,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		disableSelection: true,
 		//striped: true,
 		itemTpl: '<div>' + 
-			'<div style="color:blue;">题目：{#}</div>' +
+			'<div style="color:blue;">题目 {ROW}</div>' +
 			'<div>{content}</div>' +
 			'<div style="text-align:right;">答题：'+
 			'<span style="color:green;">{myAnswer}</span></div>'+
@@ -96,6 +97,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		
 		var subject = me.down('label[itemId=assessSubject]').getHtml()
 		var studentRecord = me.getParentRecord(); //学生信息
+		var objSubject = me.getParentSubject(); //测评学科（年级、学期、科目）
 /*		
     	Ext.Msg.confirm('询问',"确认提交测评？",function(btn){	
 			if(btn == 'yes'){
@@ -110,7 +112,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 				handler: function(){
 					actionSheet.hide();
 					Ext.Viewport.remove(actionSheet,true); //移除dom
-					me.fireEvent('save', subject,studentRecord);
+					me.fireEvent('save', subject,studentRecord,objSubject);
 				}
 			},{
 				text: '取消',

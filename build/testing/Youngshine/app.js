@@ -98184,7 +98184,7 @@ Ext.define('Youngshine.controller.Student', {
 				modal: true,
 				hideOnMaskTap: true,
 				centered: true,
-				width: 300,height: 480,
+				width: 300,height: 380,
 				scrollable: true,
 				hidden: true,
 				layout: 'fit',
@@ -98201,12 +98201,18 @@ Ext.define('Youngshine.controller.Student', {
 					//disableSelection: true,
 				    itemTpl: '{title}',
 				    data: [
-				        { title: '数学•初一上', subjectID:1,gradeID:7 },
-				        { title: '数学•初一下', subjectID:1,gradeID:7 },
-				        { title: '数学•初二上', subjectID:1,gradeID:8 },
-				        { title: '数学•初二下', subjectID:1,gradeID:8 },
-				        { title: '数学•初三上', subjectID:1,gradeID:9 },
-				        { title: '数学•初三下', subjectID:1,gradeID:9 },
+				        { title: '数学•初一上', subjectID:1,gradeID:7,semester:'上' },
+				        { title: '数学•初一下', subjectID:1,gradeID:7,semester:'下' },
+				        { title: '数学•初二上', subjectID:1,gradeID:8,semester:'上' },
+				        { title: '数学•初二下', subjectID:1,gradeID:8,semester:'下' },
+				        { title: '数学•初三上', subjectID:1,gradeID:9,semester:'上' },
+				        { title: '数学•初三下', subjectID:1,gradeID:9,semester:'下' },
+				        { title: '物理•初二上', subjectID:2,gradeID:8,semester:'上' },
+				        { title: '物理•初二下', subjectID:2,gradeID:8,semester:'下' },
+				        { title: '物理•初三上', subjectID:2,gradeID:9,semester:'上' },
+				        { title: '物理•初三下', subjectID:2,gradeID:9,semester:'下' },
+				        { title: '化学•初三上', subjectID:3,gradeID:9,semester:'上' },
+				        { title: '化学•初三下', subjectID:3,gradeID:9,semester:'下' },
 				    ],
 				}],	
 				
@@ -98230,22 +98236,25 @@ Ext.define('Youngshine.controller.Student', {
 			// 测评试卷
 			function showAssessTopic(modalRecord){
 				Ext.Viewport.setMasked({xtype:'loadmask',message:'正在出题'});
-				var obj = {
+				var params = {
 					"subjectID": modalRecord.data.subjectID,
-					"gradeID": modalRecord.data.gradeID, //semester'初一上',
+					"gradeID"  : modalRecord.data.gradeID, 
+					"semester" : modalRecord.data.semester,
 				}		
 				var store = Ext.getStore('Topic'); 
 				store.removeAll()
 				//store.clearFilter() 
 				store.getProxy().setUrl(me.getApplication().dataUrl + 
-					'readAssessTopic.php?data=' + JSON.stringify(obj));
+					'readAssessTopic.php?data=' + JSON.stringify(params));
 				store.load({
 					callback: function(records, operation, success){
 					    Ext.Viewport.setMasked(false)
 						if (success){
 							console.log(records)
 							me.assesstopic = Ext.create('Youngshine.view.student.assess.AssessTopic');
-							me.assesstopic.setParentRecord(record); //传递数
+							me.assesstopic.setParentRecord(record); //传递参数：学生
+							
+							me.assesstopic.setParentSubject(params); //传递参数，测评学科
 							Ext.Viewport.add(me.assesstopic);
 							Ext.Viewport.setActiveItem(me.assesstopic);
 						
@@ -98272,9 +98281,9 @@ Ext.define('Youngshine.controller.Student', {
 			modal: true,
 			hideOnMaskTap: true,
 			centered: true,
-			width: 420, height: 120,
-			//scrollable: true,
-			layout: 'vbox',
+			width: 550, height:550,
+			scrollable: true,
+			//layout: 'vbox',
 	        items: [{	
 	        	xtype: 'toolbar',
 	        	docked: 'top',
@@ -98315,13 +98324,19 @@ Ext.define('Youngshine.controller.Student', {
 						me.overlay.destroy()
 					}
 				}]	
+			},{
+				xtype: 'panel',
+				html: record.data.content,
+				itemId: 'topicContent',
+				styleHtmlContent: true	
 			}],	
 		})
 		this.overlay.show()
+		//this.overlay.down()
 	},
 	
 	// 提交测评试卷，生成报告，并转换成html保存到cos+数据表
-	assesstopicSave: function(subject,studentRecord){		
+	assesstopicSave: function(subject,studentRecord,objSubject){		
 		var me = this; 
 		
 		var store = Ext.getStore('Topic'); 
@@ -98364,6 +98379,9 @@ Ext.define('Youngshine.controller.Student', {
 
 		me.assessresult = Ext.create('Youngshine.view.student.assess.AssessResult');
 		me.assessresult.setParentRecord(studentRecord); //传递数:student
+		
+		me.assessresult.setParentSubject(objSubject); //传递参数，测评学科
+		
 		me.assessresult.down('label[itemId=assessSubject]').setHtml(subject)
 		//me.assessresult.down('chart').setStore(storeChart) // 图表
 		me.assessresult.down('chart').getStore().setData(arrZsd) // 图表
@@ -98486,8 +98504,8 @@ Ext.define('Youngshine.controller.Student', {
 		});	
 	},
 	
-	studentAddnew: function(win){		
-		var me = this;
+	studentAddnew: function(){		
+		var me = this; console.log('new')
 		me.studentaddnew = Ext.create('Youngshine.view.student.Addnew');
 		Ext.Viewport.add(me.studentaddnew);
 		Ext.Viewport.setActiveItem(me.studentaddnew)
@@ -98512,12 +98530,10 @@ Ext.define('Youngshine.controller.Student', {
 		        console.log(result)
 				Ext.toast(result.message,3000)
 				if(result.success){
-					//var text = response.responseText; JSON.parse()
 					//oldView.destroy()
 					Ext.Viewport.remove(me.studentaddnew,true); //remove 当前界面
 					Ext.Viewport.setActiveItem(me.student);
-					obj.studentID = result.data.studentID; //删除用
-					//obj.created = new Date();
+					obj.studentID = result.data.studentID; //最新插入的id，删除用
 					Ext.getStore('Student').insert(0,obj)
 				}
 		    }
@@ -98651,6 +98667,7 @@ Ext.define('Youngshine.model.Topic', {
 	    fields: [
 			{name: 'topicID'}, 
 			{name: 'gid'}, //题目id字符
+			{name: 'ROW'}, // 题目序号 (SELECT @row :=0)
 			{name: 'content'}, 	
 			{name: 'objective_answer'}, 
 			{name: 'answer'}, 
@@ -99033,7 +99050,7 @@ Ext.define('Youngshine.view.Main', {
             items: [{
                 xtype: 'image',
                 //cls: 'my-carousel-item-img',
-                src: 'resources/images/carousel03.jpg'
+                src: 'resources/images/carousel01.jpg'
 			},{
                 xtype: 'image',
                 //cls: 'my-carousel-item-img',
@@ -99041,7 +99058,7 @@ Ext.define('Youngshine.view.Main', {
 			},{
                 xtype: 'image',
                 //cls: 'my-carousel-item-img',
-                src: 'resources/images/carousel01.jpg'		
+                src: 'resources/images/carousel03.jpg'		
             }]
         }],
     },
@@ -99185,13 +99202,12 @@ Ext.define('Youngshine.view.student.Addnew', {
 			//title: '个人资料',
 			items: [{
 				xtype: 'textfield',
-				name: 'studentName', //绑定后台数据字段
+				name: 'studentName', //name绑定后台数据字段
 				label: '姓名',
 				clearIcon: false
 			},{
 				xtype: 'selectfield',
 				name: 'gender', 
-				autoSelect: false,
 				label: '性别',
 				options: [
 				    {text: '男', value: '男'},
@@ -99218,25 +99234,14 @@ Ext.define('Youngshine.view.student.Addnew', {
 				    {text: '四年级', value: '四年级'},
 				    {text: '三年级', value: '三年级'},
 				    {text: '二年级', value: '二年级'},
-				    {text: '一年级', value: '一年级'}
+				    {text: '一年级', value: '一年级'},
+					{text: '幼儿园', value: '幼儿园'},
 				],
 				autoSelect: false, 	
 				defaultPhonePickerConfig: {
 					doneButton: '确定',
 					cancelButton: '取消'
 				},
-			},{	
-				xtype: 'textfield',
-				name: 'addr', //绑定后台数据字段
-				label: '地址',
-				clearIcon: false,
-				listeners: {
-					focus: function(e){
-						// 滚动自己，避免toolbar滚动，前面2个 2*50=100
-						this.up('panel').getScrollable().getScroller().scrollTo(0,100);
-						window.scrollTo(0,0);
-					}
-				}
 			},{	
 				xtype: 'textfield',
 				name: 'phone', //绑定后台数据字段
@@ -99252,11 +99257,11 @@ Ext.define('Youngshine.view.student.Addnew', {
 						this.up('panel').getScrollable().getScroller().scrollTo(0,100);
 						window.scrollTo(0,0);
 					}
-				}	
+				}
 			},{	
 				xtype: 'textfield',
-				name: 'note', //绑定后台数据字段
-				label: '备注',
+				name: 'addr', //绑定后台数据字段
+				label: '地址',
 				clearIcon: false,
 				listeners: {
 					focus: function(e){
@@ -99264,19 +99269,7 @@ Ext.define('Youngshine.view.student.Addnew', {
 						this.up('panel').getScrollable().getScroller().scrollTo(0,100);
 						window.scrollTo(0,0);
 					}
-				}
-			},{
-				xtype: 'selectfield',
-				name: 'schoolsubID', 
-				label: '分校区',
-				store: 'Schoolsub',
-				valueField: 'schoolsubID',
-				displayField: 'fullname',
-				autoSelect: false, 	
-				defaultPhonePickerConfig: {
-					doneButton: '确定',
-					cancelButton: '取消'
-				},	
+				}		
 			}]	
 		}],		
 	
@@ -99316,9 +99309,7 @@ Ext.define('Youngshine.view.student.Addnew', {
 			gender = this.down('selectfield[name=gender]').getValue(),
 			grade = this.down('selectfield[name=grade]').getValue(),
 			phone = this.down('textfield[name=phone]').getValue().trim(),
-			addr = this.down('textfield[name=addr]').getValue().trim(),
-			note = this.down('textfield[name=note]').getValue().trim(),
-			schoolsubID = this.down('selectfield[name=schoolsubID]').getValue()
+			addr = this.down('textfield[name=addr]').getValue().trim()
 	
 		if (studentName == ''){
 			Ext.toast('请填写姓名',3000); return;
@@ -99332,17 +99323,14 @@ Ext.define('Youngshine.view.student.Addnew', {
 		if (phone == ''){
 			Ext.toast('电话不能空白',3000); return;
 		}
-		if (schoolsubID == null){
-			Ext.toast('请选择学生报读分校区',3000); return;
-		}
+
 		var obj = {
 			studentName: studentName,
 			gender: gender,
 			grade: grade,
 			phone: phone,
 			addr: addr,
-			note: note,
-			schoolsubID: schoolsubID, //归属学校的分校区
+			schoolsubID: localStorage.schoolsubID , //归属学校的分校区
 			consultID: localStorage.consultID,//归属哪个咨询师
 			schoolID: localStorage.schoolID //归属学校
 		};
@@ -99502,6 +99490,7 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 	config: {
 		parentRecord: null, //container保存数据记录setRecord 学生
 		parentView: null,
+		parentSubject: null, //测评学科（年级、学期、科目）
 		
 		scrollable: true,
 		
@@ -99673,10 +99662,10 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 	onZsdhist: function(radio){
 		var me = this
 		var obj = {
-			subjectID: 3,//me.getParentRecord().data.subjectID,
-			gradeID: 9,//me.getParentRecord().data.gradeID,
-			semester: '下',//me.getParentRecord().data.semester,
-			schoolID: localStorage.schoolID,
+			subjectID: me.getParentSubject().subjectID,
+			gradeID: me.getParentSubject().gradeID,
+			semester: me.getParentSubject().semester,
+			schoolID: localStorage.schoolID, //忽略，都用泉州的
 		} 
 		console.log(obj);
 		me.fireEvent('zsdhist',obj, me);
@@ -99716,6 +99705,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 
     config: {
 		parentRecord: null, //保存list选择的父表的学生记录信息
+		parentSubject: null, //测评学科（年级、学期、科目）
 		
         store: 'Topic',
         //itemHeight: 89,
@@ -99723,7 +99713,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		disableSelection: true,
 		//striped: true,
 		itemTpl: '<div>' + 
-			'<div style="color:blue;">题目：{#}</div>' +
+			'<div style="color:blue;">题目 {ROW}</div>' +
 			'<div>{content}</div>' +
 			'<div style="text-align:right;">答题：'+
 			'<span style="color:green;">{myAnswer}</span></div>'+
@@ -99803,6 +99793,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		
 		var subject = me.down('label[itemId=assessSubject]').getHtml()
 		var studentRecord = me.getParentRecord(); //学生信息
+		var objSubject = me.getParentSubject(); //测评学科（年级、学期、科目）
 /*		
     	Ext.Msg.confirm('询问',"确认提交测评？",function(btn){	
 			if(btn == 'yes'){
@@ -99817,7 +99808,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 				handler: function(){
 					actionSheet.hide();
 					Ext.Viewport.remove(actionSheet,true); //移除dom
-					me.fireEvent('save', subject,studentRecord);
+					me.fireEvent('save', subject,studentRecord,objSubject);
 				}
 			},{
 				text: '取消',

@@ -6,6 +6,7 @@ Ext.define('Youngshine.model.Topic', {
 	    fields: [
 			{name: 'topicID'}, 
 			{name: 'gid'}, //题目id字符
+			{name: 'ROW'}, // 题目序号 (SELECT @row :=0)
 			{name: 'content'}, 	
 			{name: 'objective_answer'}, 
 			{name: 'answer'}, 
