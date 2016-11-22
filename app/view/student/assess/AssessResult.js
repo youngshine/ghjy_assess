@@ -23,7 +23,7 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
             },{
             	xtype: 'spacer'	
         	},{
-				text: '历史考点',
+				text: '历年考点',
 				//iconCls: 'trash',
 				ui: 'action',
 				action: 'zsdhist',					
@@ -146,10 +146,11 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 			    '<tpl for=".">',     // interrogate the kids property within the data
 					'<p>{name}<span style="float:right;color:#888;">{#}</span></p>',
 					'<tpl if="value1 == value2">',
-			            '<p style="color:green;">Good Job。继续保持</p>',
+			            '<p style="color:green;">不错，继续保持。</p>',
 					'<tpl else>',
-						'<p style="color:red;">加强学习，最好来补习。</p>',
+						'<p style="color:red;">有待提高。</p>',
 			        '</tpl>',
+					'<p style="color:#888;">{description}</p>',
 					'<br>',
 			    '</tpl>'
 			)

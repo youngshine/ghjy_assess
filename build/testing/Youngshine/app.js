@@ -98106,17 +98106,18 @@ Ext.define('Youngshine.controller.Student', {
         control: {
 			student: {
 				addnew: 'studentAddnew', //itemtap
-				itemtap: 'studentItemtap', //包含：修改
+				itemtap: 'studentItemtap', //包含：测评、扫码
 			},
 			assesstopic: {
 				back: 'assesstopicBack',
 				save: 'assesstopicSave', //生成并导出html文件，保存腾讯云cos+数据表
 				itemtap: 'assesstopicItemtap',
+				zsdhist: 'showZsdhist', //公用
 			},
 			'assess-result': {
 				close: 'assessresultClose', // 并且发送微信消息
 				//save: 'assessresultSave', //导出html文件，保存腾讯云cos+数据表
-				zsdhist: 'assessresultZsdhist',
+				zsdhist: 'showZsdhist',
 			},
 			studentaddnew: {
 				save: 'studentaddnewSave', 
@@ -98326,7 +98327,7 @@ Ext.define('Youngshine.controller.Student', {
 				}]	
 			},{
 				xtype: 'panel',
-				html: record.data.content,
+				html: record.data.gid + ' ｜ '+record.data.level+'<hr>'+record.data.content,
 				itemId: 'topicContent',
 				styleHtmlContent: true	
 			}],	
@@ -98357,13 +98358,13 @@ Ext.define('Youngshine.controller.Student', {
 			})
 			
 			// 重复的累加
-			if(record.data.zsdName != zsdName){
+			if(record.data.zsdName !== zsdName){
 				zsdName = record.data.zsdName
 				arrZsd.push({
 					"name": zsdName,
 					"value1": answer ? 1:0, // 做对的题目
 					"value2": 1,
-					//"subject": subject,
+					"description": record.data.description,
 				})
 			}else{ //重复的，累加题目数
 				Ext.Array.each(arrZsd, function(rec,index) {
@@ -98420,8 +98421,16 @@ Ext.define('Youngshine.controller.Student', {
 		*/
 		
 		// 传递参数
-		var result = arrZsd //JSON.stringify(arrZsd)
-	
+		//var result = arrZsd //JSON.stringify(arrZsd)
+		var result = []
+
+		arrZsd.forEach(function(zsd){
+			result.push({
+				"name"  : zsd.zsdName,
+				"value1": zsd.value1,
+				"value2": zsd.value2,
+			})
+		})
 		var objAssess = {
 			"time"       : new Date().getTime(),
 			"studentID"  : studentRecord.data.studentID,
@@ -98483,8 +98492,8 @@ Ext.define('Youngshine.controller.Student', {
 		} // 模版消息end
 	},
 	
-	// 历年考点雷达图
-	assessresultZsdhist: function(obj)	{
+	// 历年考点雷达图，公用
+	showZsdhist: function(obj)	{
     	var me = this; console.log(obj)
 		
 		me.zsdhist = Ext.create('Youngshine.view.student.assess.PolarChart');
@@ -98676,6 +98685,9 @@ Ext.define('Youngshine.model.Topic', {
 			{name: 'zsdID_list'}, // 所属知识点列表
 			//{name: 'zsdName_list'}, // 知识点名称，前端显示用
 			{name: 'zsdName'}, // 知识点名称，前端显示用
+			{name: 'description'}, // 知识点描述
+			{name: 'semester'}, // 所属学期
+			
 			{name: 'subjectID'}, // 学科
 			{name: 'subjectName'}, // 学科名称
 			{name: 'gradeID'},
@@ -99505,7 +99517,7 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
             },{
             	xtype: 'spacer'	
         	},{
-				text: '历史考点',
+				text: '历年考点',
 				//iconCls: 'trash',
 				ui: 'action',
 				action: 'zsdhist',					
@@ -99628,10 +99640,11 @@ Ext.define('Youngshine.view.student.assess.AssessResult',{
 			    '<tpl for=".">',     // interrogate the kids property within the data
 					'<p>{name}<span style="float:right;color:#888;">{#}</span></p>',
 					'<tpl if="value1 == value2">',
-			            '<p style="color:green;">Good Job。继续保持</p>',
+			            '<p style="color:green;">不错，继续保持。</p>',
 					'<tpl else>',
-						'<p style="color:red;">加强学习，最好来补习。</p>',
+						'<p style="color:red;">有待提高。</p>',
 			        '</tpl>',
+					'<p style="color:#888;">{description}</p>',
 					'<br>',
 			    '</tpl>'
 			)
@@ -99713,7 +99726,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		disableSelection: true,
 		//striped: true,
 		itemTpl: '<div>' + 
-			'<div style="color:blue;">题目 {ROW}</div>' +
+			'<div style="color:#888;">题目{gid}</div>' +
 			'<div>{content}</div>' +
 			'<div style="text-align:right;">答题：'+
 			'<span style="color:green;">{myAnswer}</span></div>'+
@@ -99733,6 +99746,11 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 				}
 			},{
 				xtype: 'spacer'
+			},{
+				text: '历年考点雷达图',
+				//iconCls: 'trash',
+				ui: 'action',
+				action: 'zsdhist',	
 			},{
 				ui : 'confirm',
 				action: 'save',
@@ -99762,10 +99780,9 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 			event: 'tap',
 			fn: 'onPhoto'	
 		},{
-			element: 'element',
-			delegate: 'span.pdf',
+			delegate: 'button[action=zsdhist]',
 			event: 'tap',
-			fn: 'onPDF'
+			fn: 'onZsdhist'
 		}],
     },
 	
@@ -99821,6 +99838,19 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		});
 		Ext.Viewport.add(actionSheet);
 		actionSheet.show();	
+	},
+	
+	// 历史考点雷达图
+	onZsdhist: function(radio){
+		var me = this
+		var obj = {
+			subjectID: me.getParentSubject().subjectID,
+			gradeID: me.getParentSubject().gradeID,
+			semester: me.getParentSubject().semester,
+			schoolID: localStorage.schoolID, //忽略，都用泉州的
+		} 
+		console.log(obj);
+		me.fireEvent('zsdhist',obj, me);
 	},
 	
 	// 返回

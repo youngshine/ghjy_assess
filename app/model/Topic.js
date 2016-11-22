@@ -15,6 +15,9 @@ Ext.define('Youngshine.model.Topic', {
 			{name: 'zsdID_list'}, // 所属知识点列表
 			//{name: 'zsdName_list'}, // 知识点名称，前端显示用
 			{name: 'zsdName'}, // 知识点名称，前端显示用
+			{name: 'description'}, // 知识点描述
+			{name: 'semester'}, // 所属学期
+			
 			{name: 'subjectID'}, // 学科
 			{name: 'subjectName'}, // 学科名称
 			{name: 'gradeID'},

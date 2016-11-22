@@ -17,7 +17,7 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		disableSelection: true,
 		//striped: true,
 		itemTpl: '<div>' + 
-			'<div style="color:blue;">题目 {ROW}</div>' +
+			'<div style="color:#888;">题目{gid}</div>' +
 			'<div>{content}</div>' +
 			'<div style="text-align:right;">答题：'+
 			'<span style="color:green;">{myAnswer}</span></div>'+
@@ -37,6 +37,11 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 				}
 			},{
 				xtype: 'spacer'
+			},{
+				text: '历年考点雷达图',
+				//iconCls: 'trash',
+				ui: 'action',
+				action: 'zsdhist',	
 			},{
 				ui : 'confirm',
 				action: 'save',
@@ -66,10 +71,9 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 			event: 'tap',
 			fn: 'onPhoto'	
 		},{
-			element: 'element',
-			delegate: 'span.pdf',
+			delegate: 'button[action=zsdhist]',
 			event: 'tap',
-			fn: 'onPDF'
+			fn: 'onZsdhist'
 		}],
     },
 	
@@ -125,6 +129,19 @@ Ext.define('Youngshine.view.student.assess.AssessTopic', {
 		});
 		Ext.Viewport.add(actionSheet);
 		actionSheet.show();	
+	},
+	
+	// 历史考点雷达图
+	onZsdhist: function(radio){
+		var me = this
+		var obj = {
+			subjectID: me.getParentSubject().subjectID,
+			gradeID: me.getParentSubject().gradeID,
+			semester: me.getParentSubject().semester,
+			schoolID: localStorage.schoolID, //忽略，都用泉州的
+		} 
+		console.log(obj);
+		me.fireEvent('zsdhist',obj, me);
 	},
 	
 	// 返回

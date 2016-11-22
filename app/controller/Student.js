@@ -14,17 +14,18 @@ Ext.define('Youngshine.controller.Student', {
         control: {
 			student: {
 				addnew: 'studentAddnew', //itemtap
-				itemtap: 'studentItemtap', //包含：修改
+				itemtap: 'studentItemtap', //包含：测评、扫码
 			},
 			assesstopic: {
 				back: 'assesstopicBack',
 				save: 'assesstopicSave', //生成并导出html文件，保存腾讯云cos+数据表
 				itemtap: 'assesstopicItemtap',
+				zsdhist: 'showZsdhist', //公用
 			},
 			'assess-result': {
 				close: 'assessresultClose', // 并且发送微信消息
 				//save: 'assessresultSave', //导出html文件，保存腾讯云cos+数据表
-				zsdhist: 'assessresultZsdhist',
+				zsdhist: 'showZsdhist',
 			},
 			studentaddnew: {
 				save: 'studentaddnewSave', 
@@ -234,7 +235,7 @@ Ext.define('Youngshine.controller.Student', {
 				}]	
 			},{
 				xtype: 'panel',
-				html: record.data.content,
+				html: record.data.gid + ' ｜ '+record.data.level+'<hr>'+record.data.content,
 				itemId: 'topicContent',
 				styleHtmlContent: true	
 			}],	
@@ -265,13 +266,13 @@ Ext.define('Youngshine.controller.Student', {
 			})
 			
 			// 重复的累加
-			if(record.data.zsdName != zsdName){
+			if(record.data.zsdName !== zsdName){
 				zsdName = record.data.zsdName
 				arrZsd.push({
 					"name": zsdName,
 					"value1": answer ? 1:0, // 做对的题目
 					"value2": 1,
-					//"subject": subject,
+					"description": record.data.description,
 				})
 			}else{ //重复的，累加题目数
 				Ext.Array.each(arrZsd, function(rec,index) {
@@ -328,8 +329,16 @@ Ext.define('Youngshine.controller.Student', {
 		*/
 		
 		// 传递参数
-		var result = arrZsd //JSON.stringify(arrZsd)
-	
+		//var result = arrZsd //JSON.stringify(arrZsd)
+		var result = []
+
+		arrZsd.forEach(function(zsd){
+			result.push({
+				"name"  : zsd.zsdName,
+				"value1": zsd.value1,
+				"value2": zsd.value2,
+			})
+		})
 		var objAssess = {
 			"time"       : new Date().getTime(),
 			"studentID"  : studentRecord.data.studentID,
@@ -391,8 +400,8 @@ Ext.define('Youngshine.controller.Student', {
 		} // 模版消息end
 	},
 	
-	// 历年考点雷达图
-	assessresultZsdhist: function(obj)	{
+	// 历年考点雷达图，公用
+	showZsdhist: function(obj)	{
     	var me = this; console.log(obj)
 		
 		me.zsdhist = Ext.create('Youngshine.view.student.assess.PolarChart');
